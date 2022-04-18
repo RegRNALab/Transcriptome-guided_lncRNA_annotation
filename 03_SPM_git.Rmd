@@ -1,0 +1,161 @@
+---
+title: "SPM lncRNAs"
+author: "Jose Antonio Corona Gomez"
+date: "12/4/2022"
+output: html_document
+---
+
+## Improve the filter to determine which lncRNAs are unique to the tissue
+
+Use the TPM table
+1 Generate the average TPM per category and collapse everything into a table
+2 to calculate SPM you have to add all the TPM values and divide it by the TPM value of the specific tegido
+3 You have to make an accumulation graph and look for the point where 95% of the genes are closest to 0
+4 Test for lncRNAs independently of other genes
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tximport)
+
+library(rhdf5)
+library(readr)
+
+```
+
+
+##Read transcriptome and gene tables
+
+####kallisto results needed, Table with transcriptomes and tissue data, abundance values
+
+```{r}
+
+  dir <- "./Quant_result" # add directory where files are located when necessary
+
+  #dir <- "./Quant_result_stranding" # add directory where files are located when necessary
+
+list.files(dir)
+
+tx2gene <- read.csv(file = "tx2gene.csv")
+
+samples <- read.csv(file = "Transcriptomas_A_thaliana_wgcna_usados.csv")
+samples
+files <- file.path(dir, samples$Run, "abundance.h5")
+names(files) <- samples$Run
+all(file.exists(files))
+
+  txi <- tximport(files, type = "kallisto", tx2gene = tx2gene)
+
+```
+
+## Generate charts of accounts
+
+```{r}
+
+#head(txi$counts)
+names(txi)
+#head(txi$countsFromAbundance)
+#txi
+Cuentas <- txi$counts
+Abundance <- txi$abundance
+Length <- txi$alength
+```
+## Create TPM Table
+
+
+
+```{r}
+rpk <- txi$counts / txi$length
+scale_factor <- sum(rpk) / 1e6
+tpm <- rpk / scale_factor
+
+write.csv(Cuentas, file = "KallistoExpr.csv", row.names = TRUE)
+```
+## Gene filter with a number greater than 2 TPM this was taken from Julca et al. 2020
+
+```{r}
+#tpm largue matrix
+tpm <- as.data.frame(tpm)
+
+
+tpm<-tpm[rowSums(tpm[,-1])>0, ]
+
+tpm_tissue<-tpm
+
+c=0
+for(l1 in tissue_list){
+  #print (l1)
+  c=c+1
+  dft<- filter(table_at_wgcna, tissue == l1)
+  list_trans<-dft$Run
+  listraw<-paste(list_trans, collapse = ',')
+  list_trans<-strsplit(listraw, ",")
+  list_trans<-unique((unlist(list_trans)))
+  #print (c(list_trans))
+  if (length(list_trans)>1){
+    dft<-tpm[,list_trans]
+    tpm_tissue$Mean <- apply(dft,1,mean)
+    #print (c(list_trans))
+  } else {
+    tpm_tissue$Mean <-tpm[,list_trans]
+    #print (c(list_trans))
+    }
+  names(tpm_tissue)[names(tpm_tissue) == "Mean"] <- l1
+}
+tpm_tissue<-tpm_tissue[,225:248]
+
+tpm_tissue$TOTAL <-rowSums( tpm_tissue)
+
+```
+## Calculate SPM values by tissue
+
+```{r}
+library(scales)
+spm_tissue <-tpm_tissue
+spm_tissue <-tpm_tissue/tpm_tissue$TOTAL
+spm_tissue$TOTAL <- NULL
+#head (spm_tissue)
+## make a density plot
+spm_tissue_s <-stack(spm_tissue)
+
+#spm_tissue_s
+spm_tissue_s<-na.omit(spm_tissue_s)
+#spm_tissue_s<-spm_tissue_s%>% filter(values > 0)
+x<-nrow(spm_tissue_s)-nrow(spm_tissue_s)/20 #number of tissues
+
+spm_tissue_s<-spm_tissue_s%>% arrange(values)
+
+x<-spm_tissue_s[x,1]
+print(x)
+#tail(spm_tissue_s)
+#x
+#ggplot(spm_tissue_s, aes(x=values)) + geom_density()
+den <- ggplot(spm_tissue_s, aes(x=values, after_stat(count))) + 
+  geom_density(color= "blue", fill= "lightblue",alpha=0.6)+
+  geom_vline(xintercept = x,colour = "red")+
+  scale_y_log10() +
+  #scale_y_continuous(name = "Average Gbases",limits = c(-0, 22.5),breaks = seq(from = 0.0, to = 30, by = 10))+
+  #scale_fill_brewer(palette="Set2")+
+  theme(axis.line = element_line(size=1, colour = "black"),
+        legend.position="bottom",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank(),
+        plot.title=element_text(size = 12),
+        text=element_text(size = 12),
+        axis.text.x=element_text(colour="black", size = 12, angle = 0),
+        axis.text.y=element_text(colour="black", size = 12))
+#den +  annotation_logticks()
+den <- ggplotly(den)
+den
+
+```
+
+
+ 
+ 
+ 
+
