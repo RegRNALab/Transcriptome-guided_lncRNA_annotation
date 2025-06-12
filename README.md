@@ -97,20 +97,12 @@ See the example of how it is done in the following R markdown:
 
 #### Generation of coding and non-coding gene co-expression networks
 
+Gene co-expression networks were generated as described in the script: 
 
-
-
----
-
-####**Bibliography**
-
-
+> `04_WGCNA_annotation_At.R`
 
 ---
-
 
 ### Contact ###
-Unidad de Genómica Avanzada, Langebio, Cinvestav, 36824 Irapuato, Guanajuato, México
 
-jose.corona@cinvestav.mx
-selene.fernandez@cinvestav.mx
+[https://regrnalab.github.io/](https://regrnalab.github.io/)
