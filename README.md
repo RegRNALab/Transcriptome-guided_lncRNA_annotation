@@ -8,12 +8,10 @@ It's a compilation of programs and scripts for do transcriptome-guided annotatio
 ### Citing ###
 
 **Jose Antonio Corona-Gomez, Evelia Lorena Coss-Navarrete, Irving Jair Garcia-Lopez , Jaime Alejandro Pérez-Patiño and Selene L. Fernandez-Valverde**
-
 *Transcriptome-guided annotation and functional classification of long non-coding RNAs in Arabidopsis thaliana*
+Scientific Reports 12:14063, 2022
 
-
-
-bioRxiv ####; doi: https:URL
+[https://doi.org/10.1038/s41598-022-18254-0](https://doi.org/10.1038/s41598-022-18254-0)
 
 
 #### SOFTWARE REQUIREMENTS ###
