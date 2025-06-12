@@ -1,11 +1,9 @@
-# README #
 
-===
 ### Description ###
 
-It's a compilation of programs and scripts for do transcriptome-guided annotation and functional classification of long non-coding RNAs in *Arabidopsis thaliana*
+This repository contains a compilation of programs and scripts for do transcriptome-guided annotation and functional classification of long non-coding RNAs in *Arabidopsis thaliana*
 
-### Citing ###
+### Citation ###
 
 **Jose Antonio Corona-Gomez, Evelia Lorena Coss-Navarrete, Irving Jair Garcia-Lopez , Jaime Alejandro Pérez-Patiño and Selene L. Fernandez-Valverde**
 *Transcriptome-guided annotation and functional classification of long non-coding RNAs in Arabidopsis thaliana*
